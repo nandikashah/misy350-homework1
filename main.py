@@ -21,18 +21,16 @@ quantity = int(input("Enter the quantity: "))
 #PROCESS: find item ID and quantity in order, then remove a found item from stock and calculate the price
 selected_item = None 
 
-for inventory_item in inventory:
-    if inventory_item["item_id"] == item_id:
-        selected_item = inventory_item
-        print("Item exists!")
+for item in inventory:
+    if item["item_id"] == item_id:
+        selected_item = item
         break
 
 if selected_item is None:
         print("Item does not exist.")
 
-if selected_item["stock"] < quantity:
+elif selected_item["stock"] < quantity:
     print("Not enough stock!")
-
 else:
     selected_item["stock"] -= quantity
     total_price = quantity * selected_item["unit_price"]
@@ -55,6 +53,7 @@ else:
     print(f"Item: {selected_item['name']}")
     print(f"Quantity: {quantity}")
     print(f"Total: ${total_price:.2f}")
+    print(f"New stock: {selected_item['stock']}")
 
 #READ
 #Query 2: View all orders placed for a particular item -- prompt user to enter the item name
@@ -80,6 +79,7 @@ else:
      
     for order in orders:
         if order['item_id'] == search_item_id:
+            #OUTPUT
             print(f"Order ID: {order['order_id']}, Quantity: {order['quantity']}, Status: {order['status']}, Total: {order['total']}")
             orders_found = True
 
@@ -121,7 +121,7 @@ new_stock = int(input("Enter new stock quantity: "))
 found = False
 
 for item in inventory:
-     if item_id == item['item_id']:
+     if item['item_id'] == item_id:
           item['stock'] = new_stock
           found = True
           break
@@ -129,6 +129,8 @@ for item in inventory:
 #OUTPUT
 if found:
      print('Stock updated successfully!')
+     print(f"Item: {item['name']}")
+     print(f"New stock level: {item['stock']}")
 else:
      print('Item ID not found.')
 
@@ -136,7 +138,7 @@ else:
 #Query 5: Cancel an order (and restore stock) using the steps below;
 
 #INPUT
-cancel_order_id = input('Enter Order ID to cancel: ')
+cancel_order_id = input('Enter Order ID to cancel: ').lower()
 
 #PROCESS: Cancel order
 order_found = False
@@ -144,15 +146,19 @@ order_found = False
 for order in orders:
      if order['order_id'] == cancel_order_id:
           order_found = True
-          order['status'] = 'cancelled'
+          order['status'] = 'Cancelled'
 
-for item in inventory:
-            if item['item_id'] == order['item_id']:
-                item['stock'] += order['quantity']
-                break
+     for item in inventory:
+          if item['item_id'] == order['item_id']:
+               item['stock'] += order['quantity']
+               restored_item = item
+               break
+     break
 
 #OUTPUT
 if order_found:
     print("Order cancelled successfully!")
+    print(f"Item restored: {restored_item['name']}")
+    print(f"Updated stock: {restored_item['stock']}")
 else:
     print('Order not found.')
