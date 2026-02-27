@@ -1,0 +1,1 @@
+[{"id": "HW1", "title": "Introduction to Database", "description": "bascis of database design", "points": 100, "type": "homework"}, {"id": "HW2", "title": "Normalization", "description": "normalize the table designs", "points": 100, "type": "lab"}, {"id": "HW3", "title": "Homework 1", "description": "ER Design", "points": 10.0, "type": "Homework"}]
