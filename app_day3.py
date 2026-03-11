@@ -3,6 +3,13 @@ import time
 import json
 from pathlib import Path
 
+st.set_page_config(
+    page_title = "Course Manager",
+    page_icon = "",
+    layout = "centered",
+    initial_sidebar_state = "collapsed"
+)
+
 st.title("Course Management App")
 st.header("Assignments")
 st.subheader("Assignments Manager")
@@ -29,7 +36,7 @@ assignments = [
 
 json_path = Path("assignments.json")
 
-if json_path.exists:
+if json_path.exists():
     with json_path.open("r",encoding="utf=8") as f:
         assignments = json.load(f)
 
@@ -42,7 +49,32 @@ with tab1:
         st.dataframe(assignments)
 
     else:
-        search_title = st.selectbox("Assignment Titles", [])
+        #search_title = st.selectbox("Assignment Titles", [])
+        titles = []
+        for assignment in assignments:
+            titles.append(assignment["title"])
+
+        if not titles:
+            st.warning("No assignment is found")
+        else:
+            selected_title = st.selectbox("Assignment Title",titles)
+
+            for assignment in assignments:
+                if assignment["title"] == selected_title:
+                    with st.expander("Assignment Details", expanded=True):
+                        st.markdown(f"### Title: {assignment['title']}")
+                        st.markdown(f"Description: {assignment['description']}")
+                        st.markdown(f"Type: **{assignment['type']}**")
+                    break
+            selected_assignment = st.selectbox('Assignment Title',
+                                               options = assignments,
+                                               format_func = lambda x: f"{x['title']}",
+                                               key = "new_assignment")
+            with st.expander("Assignment Details", expanded=True):
+                        st.markdown(f"### Title: {assignment['title']}")
+                        st.markdown(f"Description: {assignment['description']}")
+                        st.markdown(f"Type: **{assignment['type']}**")
+            
 
 with tab2:
     #add new assignment
@@ -107,3 +139,51 @@ with tab2:
 
             st.success("Assignment is recorded!")
 
+with tab3: 
+    st.markdown("### Update an Assignment")
+
+    titles = []
+    for assignment in assignments:
+        titles.append(assignment["title"])
+
+    selected_item = st.selectbox("Select an item", titles,key = "search_titles")
+    
+    selected_assignment = {}
+    for assignment in assignments:
+        if assignment["title"] == selected_item:
+            selected_assignment = assignment
+            break
+
+    edit_title = st.text_input("Title", value = selected_assignment["title"], key = f"edit_title_{selected_assignment["id"]}")
+    edit_description = st.text_area("Description", value = selected_assignment['description'],
+                                    key = f"edit_description_{selected_assignment['id']}")
+    
+    type_list = ["homework","Lab"]
+    selected_assignment_type_index = type_list.index(selected_assignment['type'])
+
+    edit_type = st.radio('Type', type_list, index = selected_assignment_type_index,
+                         key = f"edit_type_{selected_assignment['id']}")
+
+
+    update_btn = st.button("Update Assignment", key = "btn_update", use_container_width = True, type = "primary")
+    if update_btn:
+        with st.spinner("Updating the assignment..."):
+            time.sleep(5)
+            selected_assignment['title'] = edit_title
+            selected_assignment['description'] = edit_description
+
+            with json_path.open("w", encoding = "utf-8") as f:
+                json.dump(assignments,f)
+
+            st.success("Assignment is updated!")
+            time.sleep(5)
+            st.rerun()
+
+        
+            #st.dataframe(assignments)
+
+with st.sidebar:
+    st.markdown("This is a sidebar")
+    if st.button("Log out", type="primary",use_container_width=True):
+        time.sleep(5)
+        st.success("You are being logged out")

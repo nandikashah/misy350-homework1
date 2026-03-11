@@ -58,6 +58,8 @@ import time
 import json
 from pathlib import Path
 
+
+
 json_path = Path("assignments.json")
 
 if btn_save:
